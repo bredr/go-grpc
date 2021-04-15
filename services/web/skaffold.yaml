@@ -12,6 +12,8 @@ build:
   artifacts:
     - image: web
       context: .
+      docker:
+        dockerfile: ../Dockerfile
       requires:
         - image: proto
         - image: common
@@ -25,6 +27,8 @@ profiles:
       artifacts:
         - image: web
           context: .
+          docker:
+            dockerfile: ../Dockerfile
           requires:
             - image: proto
             - image: common
@@ -33,6 +37,8 @@ profiles:
               alias: BASE
         - image: stubfilm
           context: ./stubs/films
+          docker:
+            dockerfile: ../../proto/stub/Dockerfile.Stub
           requires:
             - image: proto_stub
               alias: PROTOSTUB
