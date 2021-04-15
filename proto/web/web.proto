@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option go_package="github.com/bredr/go-grpc-example/proto/web";
+import "films/films.proto";
+package web;
+
+service WebService {
+  rpc CreateFilm(films.Film) returns (films.Film) {}
+  rpc UpdateFilm(films.Film) returns (films.Film) {}
+  rpc FindFilms(films.FilmSearchRequest) returns (films.Films) {}
+  rpc DeleteFilm(films.ID) returns (films.Empty) {}
+}

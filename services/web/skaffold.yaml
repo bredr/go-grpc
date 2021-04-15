@@ -1,0 +1,43 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+ name: web-service
+requires:
+  - path: ../../common
+  - path: ../../proto
+  - path: ../../base
+  - path: ../../proto/stub
+build:
+  local: {push: false, useBuildkit: true}
+  artifacts:
+    - image: web
+      context: .
+      requires:
+        - image: proto
+        - image: common
+          alias: COMMON
+        - image: base
+          alias: BASE
+deploy: {}
+profiles:
+  - name: stub
+    build:
+      artifacts:
+        - image: web
+          context: .
+          requires:
+            - image: proto
+            - image: common
+              alias: COMMON
+            - image: base
+              alias: BASE
+        - image: stubfilm
+          context: ./stubs/films
+          requires:
+            - image: proto_stub
+              alias: PROTOSTUB
+    deploy:
+      kubectl:
+        manifests: [./stubs/films/*.yaml]
+
+

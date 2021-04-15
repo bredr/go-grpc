@@ -1,0 +1,12 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+requires:
+  - path: ../
+build:
+  local: {push: false, useBuildkit: true}
+  artifacts:
+    - image: proto_stub
+      requires:
+        - image: proto
+          alias: PROTO
+deploy: {}

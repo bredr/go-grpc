@@ -1,0 +1,3 @@
+ARG PROTOSTUB
+FROM ${PROTOSTUB}
+COPY ./stub.js /app/src

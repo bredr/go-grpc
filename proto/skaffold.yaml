@@ -1,0 +1,12 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+requires:
+  - path: ./base
+build:
+  local: {push: false, useBuildkit: true}
+  artifacts:
+    - image: proto
+      requires:
+        - image: proto_base
+          alias: BASE
+deploy: {}
