@@ -12,6 +12,9 @@ WORKDIR /go/src/services/svc
 COPY go.* /go/src/services/svc/
 RUN go mod download
 COPY . /go/src/services/svc
+
+RUN go generate ./...
+
 # `skaffold debug` sets SKAFFOLD_GO_GCFLAGS to disable compiler optimizations
 ARG SKAFFOLD_GO_GCFLAGS
 RUN go build -gcflags="${SKAFFOLD_GO_GCFLAGS}" -o /app .

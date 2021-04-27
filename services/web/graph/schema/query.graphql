@@ -1,0 +1,38 @@
+enum Genre {
+  ACTION
+  ADVENTURE
+  ANIMATION
+  BIOGRAPHY
+  COMEDY
+  CRIME
+  DOCUMENTARY
+  DRAMA
+  FANTASY
+  HORROR
+  THRILLER
+  SCI_FI
+  ROMANCE
+  UNKNOWN
+}
+
+input FilmSearch {
+  Genres: [Genre!]
+  SearchTerm: String
+  ReleasedAfter: Time
+}
+
+type Film {
+  ID: ID!
+  Name: String!
+  ReleaseDate: Time!
+  Genre: Genre!
+  Actors: [Actor!] @goField(forceResolver: true)
+}
+
+type Actor {
+  Name: String!
+}
+
+type Query {
+  films(search: FilmSearch): [Film!]
+}

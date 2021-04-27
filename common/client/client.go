@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"log"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 
@@ -32,5 +33,16 @@ func DialContext(ctx context.Context, target string) (*grpc.ClientConn, error) {
 		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(unaryInterceptors...)),
 		grpc.WithBlock(),
 	}
-	return grpc.DialContext(ctx, target, dialOptions...)
+	conn, err := grpc.DialContext(ctx, target, dialOptions...)
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		<-ctx.Done()
+		err := conn.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+	return conn, nil
 }
