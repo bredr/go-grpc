@@ -1,6 +1,8 @@
 ARG COMMON
 ARG BASE
+ARG PROTO 
 
+FROM ${PROTO} as proto
 FROM ${COMMON} as builder
 COPY --from=proto /go/src/proto /go/src/proto
 

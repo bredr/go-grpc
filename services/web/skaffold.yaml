@@ -16,6 +16,7 @@ build:
         dockerfile: ../Dockerfile
       requires:
         - image: proto
+          alias: PROTO
         - image: common
           alias: COMMON
         - image: base
@@ -31,6 +32,7 @@ profiles:
             dockerfile: ../Dockerfile
           requires:
             - image: proto
+              alias: PROTO
             - image: common
               alias: COMMON
             - image: base
