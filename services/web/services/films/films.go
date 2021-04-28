@@ -39,7 +39,7 @@ var mapServiceToModelGenre = map[pb.FilmGenre]model.Genre{
 	pb.FilmGenre_NULL_GENRE:  model.GenreUnknown,
 }
 
-func MapGenres(input []model.Genre) (out []pb.FilmGenre) {
+func mapGenres(input []model.Genre) (out []pb.FilmGenre) {
 	for _, x := range input {
 		v, ok := mapModelToServiceGenre[x]
 		if ok {
@@ -66,7 +66,7 @@ func MapFilms(input []*pb.Film) (out []model.Film) {
 func GenerateSearchRequest(input *model.FilmSearch) (request *pb.FilmSearchRequest) {
 	if input != nil {
 		request = &pb.FilmSearchRequest{}
-		request.AllowedGenres = MapGenres(input.Genres)
+		request.AllowedGenres = mapGenres(input.Genres)
 		if input.SearchTerm != nil {
 			request.NameSearch = *input.SearchTerm
 		}
