@@ -10,6 +10,6 @@ WORKDIR /go/src/proto/
 COPY go.* /go/src/proto/
 RUN go mod download
 
-COPY * /go/src/proto/
+COPY . /go/src/proto/
 
 RUN go generate .

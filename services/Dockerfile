@@ -4,6 +4,7 @@ ARG PROTO
 
 FROM ${PROTO} as proto
 FROM ${COMMON} as builder
+
 COPY --from=proto /go/src/proto /go/src/proto
 
 ENV GOPATH=/go
@@ -13,6 +14,7 @@ ENV GO111MODULE=on
 WORKDIR /go/src/services/svc
 COPY go.* /go/src/services/svc/
 RUN go mod download
+
 COPY . /go/src/services/svc
 
 RUN go generate ./...
