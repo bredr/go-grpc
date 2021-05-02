@@ -1,6 +1,8 @@
 package films
 
 import (
+	"time"
+
 	pb "github.com/bredr/go-grpc-example/proto/films"
 	"github.com/bredr/go-grpc-example/services/web/graph/model"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -52,20 +54,24 @@ func mapGenres(input []model.Genre) (out []pb.FilmGenre) {
 func MapFilms(input []*pb.Film) (out []model.Film) {
 	for _, x := range input {
 		if x != nil {
+			releaseDate := time.Time{}
+			if x.GetReleaseDate() != nil {
+				releaseDate = x.GetReleaseDate().AsTime()
+			}
 			out = append(out, model.Film{
 				Name:        x.Name,
 				ID:          x.ID,
 				Genre:       mapServiceToModelGenre[x.Genre],
-				ReleaseDate: x.ReleaseDate.AsTime(),
+				ReleaseDate: releaseDate,
 			})
 		}
 	}
 	return out
 }
 
-func GenerateSearchRequest(input *model.FilmSearch) (request *pb.FilmSearchRequest) {
+func GenerateSearchRequest(input *model.FilmSearch) *pb.FilmSearchRequest {
+	request := &pb.FilmSearchRequest{}
 	if input != nil {
-		request = &pb.FilmSearchRequest{}
 		request.AllowedGenres = mapGenres(input.Genres)
 		if input.SearchTerm != nil {
 			request.NameSearch = *input.SearchTerm

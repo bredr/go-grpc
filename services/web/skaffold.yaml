@@ -7,7 +7,7 @@ requires:
   - path: ../../proto
   - path: ../../base
   - path: ../../proto/stub
-build:
+build: &default-build
   local: {push: false, useBuildkit: true}
   artifacts:
     - image: web
@@ -21,29 +21,23 @@ build:
           alias: COMMON
         - image: base
           alias: BASE
-deploy: {}
+    - image: stubfilm
+      context: ./stubs/films
+      docker:
+        dockerfile: ../../proto/stub/Dockerfile.Stub
+      requires:
+        - image: proto_stub
+          alias: PROTOSTUB
+deploy:
+  kustomize:
+    paths: [./k8s]
 profiles:
+  - name: dev
+    build: *default-build
+    deploy:
+      kustomize:
+        paths: [./k8s/overlays/dev]
   - name: stub
-    build:
-      artifacts:
-        - image: web
-          context: .
-          docker:
-            dockerfile: ../Dockerfile
-          requires:
-            - image: proto
-              alias: PROTO
-            - image: common
-              alias: COMMON
-            - image: base
-              alias: BASE
-        - image: stubfilm
-          context: ./stubs/films
-          docker:
-            dockerfile: ../../proto/stub/Dockerfile.Stub
-          requires:
-            - image: proto_stub
-              alias: PROTOSTUB
     deploy:
       kubectl:
         manifests: [./stubs/films/*.yaml]
