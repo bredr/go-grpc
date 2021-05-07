@@ -1,0 +1,9 @@
+query filmsList($searchTerm: String, $genres: [Genre!]!) {
+  films(
+    search: { SearchTerm: $searchTerm, Genres: $genres, ReleasedAfter: null }
+  ) {
+    ID
+    Name
+    Genre
+  }
+}
