@@ -23,6 +23,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:stub": "STUB=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -55,6 +56,7 @@
     "@graphql-codegen/typescript-react-apollo": "2.2.4",
     "@graphql-codegen/typescript-urql": "^2.0.6",
     "@types/react-router-dom": "^5.1.7",
+    "apollo-server": "^2.24.0",
     "prettier": "^2.2.1"
   }
 }
