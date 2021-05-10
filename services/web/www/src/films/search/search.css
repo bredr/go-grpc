@@ -1,0 +1,16 @@
+form {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-gap: 16px;
+}
+
+label,
+button {
+  grid-column: 1 / 2;
+}
+
+input#searchTerm,
+.genres {
+  grid-column: 2 / 3;
+  width: 100%;
+}

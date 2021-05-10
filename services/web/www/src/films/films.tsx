@@ -1,7 +1,9 @@
-import { Field, Form, Formik } from "formik";
+import { Formik } from "formik";
 import React, { useState } from "react";
 import { Genre } from "../generated/graphql";
 import { FilmsList } from "./list/films-list";
+import { Search } from "./search/search";
+import "./films.css";
 
 export const Films = () => {
   const [{ searchTerm, genres }, setState] = useState<{
@@ -10,35 +12,15 @@ export const Films = () => {
   }>({ searchTerm: "", genres: [] });
 
   return (
-    <div>
-      <Formik
-        initialValues={{ searchTerm, genres }}
-        onSubmit={(x) => {
-          console.log(x);
-          setState(x);
-        }}
-      >
-        {({ values }) => (
-          <Form>
-            <Field name="searchTerm" />
-            <label htmlFor="genres">Genres</label>
-            <div role="group">
-              {enumKeys(Genre).map((x) => (
-                <label key={x}>
-                  <Field type="checkbox" name="genres" value={Genre[x]} />
-                  {x}
-                </label>
-              ))}
-            </div>
-            <button type="submit">Submit</button>
-          </Form>
-        )}
-      </Formik>
-      <FilmsList searchTerm={searchTerm} genres={genres} />
-    </div>
+    <>
+      <div>
+        <Formik initialValues={{ searchTerm, genres }} onSubmit={setState}>
+          {Search}
+        </Formik>
+      </div>
+      <div>
+        <FilmsList searchTerm={searchTerm} genres={genres} />
+      </div>
+    </>
   );
 };
-
-function enumKeys<O extends object, K extends keyof O = keyof O>(obj: O): K[] {
-  return Object.keys(obj).filter((k) => Number.isNaN(+k)) as K[];
-}

@@ -1,7 +1,12 @@
 import React from "react";
 import "./App.css";
 import { createClient, Provider } from "urql";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  NavLink,
+} from "react-router-dom";
 import { Films } from "./films/films";
 
 const client = createClient({
@@ -14,16 +19,18 @@ function App() {
       <Router>
         <div>
           <nav>
-            <ul>
-              <Link to="/">Films</Link>
-            </ul>
+            <NavLink activeClassName="is-active" to="/">
+              Films
+            </NavLink>
           </nav>
         </div>
-        <Switch>
-          <Route path="/">
-            <Films />
-          </Route>
-        </Switch>
+        <div className="container">
+          <Switch>
+            <Route path="/">
+              <Films />
+            </Route>
+          </Switch>
+        </div>
       </Router>
     </Provider>
   );
