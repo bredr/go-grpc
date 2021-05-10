@@ -24,3 +24,4 @@ yarn-error.log*
 
 # generated
 src/generated
+graphql.schema.json
