@@ -2,17 +2,21 @@ package main
 
 import (
 	"context"
+	"embed"
 	"errors"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/apollotracing"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/bredr/go-grpc-example/services/web/graph/generated"
 	"github.com/bredr/go-grpc-example/services/web/graph/resolvers"
 )
+
+//go:embed www/build
+var embeddedFiles embed.FS
 
 const defaultPort = "8080"
 
@@ -32,9 +36,22 @@ func main() {
 	})
 	srv.Use(apollotracing.Tracer{})
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/", http.FileServer(getFileSystem()))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Printf("connect to http://localhost:%s/ for app", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func getFileSystem() http.FileSystem {
+
+	// Get the build subdirectory as the
+	// root directory so that it can be passed
+	// to the http.FileServer
+	fsys, err := fs.Sub(embeddedFiles, "www/build")
+	if err != nil {
+		panic(err)
+	}
+
+	return http.FS(fsys)
 }

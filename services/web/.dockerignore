@@ -1,4 +1,5 @@
 k8s
 ./graph/generated
-www
 stubs
+./www/node_modules
+./www/build

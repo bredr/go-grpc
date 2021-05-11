@@ -1,6 +1,6 @@
 module github.com/bredr/go-grpc-example/services/web
 
-go 1.15
+go 1.16
 
 replace github.com/bredr/go-grpc-example/proto => ../../proto
 
