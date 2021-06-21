@@ -56,7 +56,12 @@ func New(authFn *grpc_auth.AuthFunc) *grpc.Server {
 		grpc_prometheus.UnaryServerInterceptor,
 		grpc_recovery.UnaryServerInterceptor(),
 		grpc_validator.UnaryServerInterceptor(),
-		grpc_logrus.UnaryServerInterceptor(log.NewEntry(log.StandardLogger())),
+		grpc_logrus.UnaryServerInterceptor(
+			log.NewEntry(log.StandardLogger()),
+			grpc_logrus.WithDecider(func(fullMethodName string, err error) bool {
+				return fullMethodName != "/grpc.health.v1.Health/Check"
+			}),
+		),
 		grpc_auth.UnaryServerInterceptor(*authFn),
 	}
 
