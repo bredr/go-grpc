@@ -1,0 +1,33 @@
+apiVersion: skaffold/v2beta12
+kind: Config
+metadata:
+ name: web-service
+requires:
+  - path: ../../common
+  - path: ../../proto
+  - path: ../../base
+build: &default-build
+  local: {push: false, useBuildkit: true}
+  artifacts:
+    - image: films
+      context: .
+      docker:
+        dockerfile: ../Dockerfile
+      requires:
+        - image: proto
+          alias: PROTO
+        - image: common
+          alias: COMMON
+        - image: base
+          alias: BASE
+deploy:
+  kustomize:
+    paths: [./k8s]
+profiles:
+  - name: dev
+    build: *default-build
+    deploy:
+      kustomize:
+        paths: [./k8s/overlays/dev]
+
+

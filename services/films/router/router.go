@@ -7,11 +7,12 @@ import (
 	"github.com/bredr/go-grpc-example/proto/films"
 	db "github.com/bredr/go-grpc-example/services/films/repositories/films"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/status"
 )
 
-func New(ctx context.Context) films.FilmServiceServer {
-	collection, err := db.New(ctx)
+func New(ctx context.Context, h *health.Server) films.FilmServiceServer {
+	collection, err := db.New(ctx, h)
 	if err != nil {
 		log.Fatal(err)
 	}

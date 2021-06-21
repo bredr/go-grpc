@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: films
+spec:
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      containers:
+      - name: service
+        env:
+          - name: DEBUG
+            value: "true"
+          - name: MONGO_CONNECTION_STRING
+            value: "mongodb://localhost:27017"
+      - name: mongo
+        image: mongo:4.4.6
+        volumeMounts:
+            - name: storage
+              mountPath: /data/db
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+            claimName: mongo-pvc
+

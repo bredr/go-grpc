@@ -1,0 +1,48 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: films
+  labels:
+    app: films
+spec:
+  selector:
+    app: films
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 50051
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: films
+  labels:
+    app: films
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: films
+  template:
+    metadata:
+      labels:
+        app: films
+    spec:
+      containers:
+      - name: service
+        image: films
+        ports:
+        - containerPort: 50051
+        env:
+          - name: PORT
+            value: "50051"
+        readinessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:50051"]
+          initialDelaySeconds: 5
+        livenessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:50051"]
+          initialDelaySeconds: 10          

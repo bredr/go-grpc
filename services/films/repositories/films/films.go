@@ -10,10 +10,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func New(ctx context.Context) (Collection, error) {
+func New(ctx context.Context, h *health.Server) (Collection, error) {
 	viper.SetDefault("MONGO_CONNECTION_STRING", "mongodb://localhost:27017")
 	viper.AutomaticEnv()
 
@@ -28,6 +30,21 @@ func New(ctx context.Context) (Collection, error) {
 	if err != nil {
 		return nil, err
 	}
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				if err := client.Ping(ctx, nil); err != nil {
+					h.SetServingStatus("mongo", grpc_health_v1.HealthCheckResponse_NOT_SERVING)
+				} else {
+					h.SetServingStatus("mongo", grpc_health_v1.HealthCheckResponse_SERVING)
+				}
+				time.Sleep(5 * time.Second)
+			}
+		}
+	}()
 
 	go func() {
 		<-ctx.Done()
