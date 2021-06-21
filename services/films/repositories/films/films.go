@@ -24,6 +24,11 @@ func New(ctx context.Context) (Collection, error) {
 
 	c := client.Database("example").Collection("films")
 
+	_, err = c.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{Key: "name", Value: "text"}}})
+	if err != nil {
+		return nil, err
+	}
+
 	go func() {
 		<-ctx.Done()
 		if err = client.Disconnect(ctx); err != nil {
@@ -89,21 +94,28 @@ func (c *collection) Delete(ctx context.Context, id string) error {
 
 func (c *collection) Query(ctx context.Context, query *pb.FilmSearchRequest) (*pb.Films, error) {
 	opts := options.Find().SetSort(bson.D{{Key: "name", Value: -1}})
-	filter := bson.D{}
+	filters := []bson.M{}
 	if query != nil {
 		if len(query.AllowedGenres) > 0 {
-			genres := make([]bson.E, len(query.AllowedGenres))
+			genres := make([]bson.M, len(query.AllowedGenres))
 			for i, x := range query.AllowedGenres {
-				genres[i] = bson.E{Key: "genre", Value: x}
+				genres[i] = bson.M{"genre": x.String()}
 			}
-			filter = append(filter, bson.E{Key: "$or", Value: genres})
+			filters = append(filters, bson.M{"$or": genres})
 		}
 		if query.ReleasedAfter != nil {
-			filter = append(filter, bson.E{Key: "release_date", Value: bson.E{Key: "$ge", Value: query.ReleasedAfter.AsTime()}})
+			filters = append(filters, bson.M{"release_date": bson.M{"$gte": query.ReleasedAfter.AsTime()}})
 		}
 		if query.NameSearch != "" {
-			filter = append(filter, bson.E{Key: "name", Value: bson.E{Key: "$text", Value: bson.E{Key: "$search", Value: query.NameSearch}}})
+			filters = append(filters, bson.M{"$text": bson.M{"$search": query.NameSearch}})
 		}
+	}
+	var filter bson.M
+	if len(filters) == 1 {
+		filter = filters[0]
+	}
+	if len(filters) > 1 {
+		filter = bson.M{"$and": filters}
 	}
 	cursor, err := c.c.Find(ctx, filter, opts)
 	if err != nil {

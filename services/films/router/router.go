@@ -35,12 +35,12 @@ func (r *router) FindFilms(ctx context.Context, f *films.FilmSearchRequest) (*fi
 }
 
 func (r *router) DeleteFilm(ctx context.Context, id *films.ID) (*films.Empty, error) {
-	if id != nil {
+	if !(id != nil) {
 		return nil, status.Error(codes.InvalidArgument, "no id provided")
 	}
 	err := r.db.Delete(ctx, id.ID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	return nil, nil
+	return &films.Empty{}, nil
 }
