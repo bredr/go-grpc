@@ -24,6 +24,26 @@ func (r *queryResolver) Films(ctx context.Context, search *model.FilmSearch) ([]
 	return films.MapFilms(result.GetFilms()), nil
 }
 
+func (r *queryResolver) CreateFilm(ctx context.Context, film model.FilmInput) (*model.Film, error) {
+	result, err := r.films.CreateFilm(ctx, films.MapFilmInput(film))
+	if err != nil {
+		return nil, err
+	}
+	f := films.MapFilm(result)
+	return &f, nil
+}
+
+func (r *queryResolver) UpdateFilm(ctx context.Context, id string, film model.FilmInput) (*model.Film, error) {
+	input := films.MapFilmInput(film)
+	input.ID = id
+	result, err := r.films.UpdateFilm(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	f := films.MapFilm(result)
+	return &f, nil
+}
+
 // Film returns generated.FilmResolver implementation.
 func (r *Resolver) Film() generated.FilmResolver { return &filmResolver{r} }
 

@@ -41,6 +41,14 @@ var mapServiceToModelGenre = map[pb.FilmGenre]model.Genre{
 	pb.FilmGenre_NULL_GENRE:  model.GenreUnknown,
 }
 
+func MapFilmInput(input model.FilmInput) *pb.Film {
+	f := &pb.Film{}
+	f.Name = input.Name
+	f.ReleaseDate = timestamppb.New(input.ReleaseDate)
+	f.Genre = mapModelToServiceGenre[input.Genre]
+	return f
+}
+
 func mapGenres(input []model.Genre) (out []pb.FilmGenre) {
 	for _, x := range input {
 		v, ok := mapModelToServiceGenre[x]
@@ -51,19 +59,26 @@ func mapGenres(input []model.Genre) (out []pb.FilmGenre) {
 	return out
 }
 
+func MapFilm(x *pb.Film) model.Film {
+	if x != nil {
+		releaseDate := time.Time{}
+		if x.GetReleaseDate() != nil {
+			releaseDate = x.GetReleaseDate().AsTime()
+		}
+		return model.Film{
+			Name:        x.Name,
+			ID:          x.ID,
+			Genre:       mapServiceToModelGenre[x.Genre],
+			ReleaseDate: releaseDate,
+		}
+	}
+	return model.Film{}
+}
+
 func MapFilms(input []*pb.Film) (out []model.Film) {
 	for _, x := range input {
 		if x != nil {
-			releaseDate := time.Time{}
-			if x.GetReleaseDate() != nil {
-				releaseDate = x.GetReleaseDate().AsTime()
-			}
-			out = append(out, model.Film{
-				Name:        x.Name,
-				ID:          x.ID,
-				Genre:       mapServiceToModelGenre[x.Genre],
-				ReleaseDate: releaseDate,
-			})
+			out = append(out, MapFilm(x))
 		}
 	}
 	return out

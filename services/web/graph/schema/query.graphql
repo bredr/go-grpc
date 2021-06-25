@@ -21,6 +21,12 @@ input FilmSearch {
   ReleasedAfter: Time
 }
 
+input FilmInput {
+  Name: String!
+  ReleaseDate: Time!
+  Genre: Genre!
+}
+
 type Film {
   ID: ID!
   Name: String!
@@ -35,4 +41,6 @@ type Actor {
 
 type Query {
   films(search: FilmSearch): [Film!]
+  createFilm(film: FilmInput!): Film!
+  updateFilm(id: ID!, film: FilmInput!): Film!
 }
